@@ -16,7 +16,7 @@ function TodoForm(props) {
             return response.json()
         })
         .then(responseJSON => {
-            console.log('response:', responseJSON.isuLists);
+//            console.log('response:', responseJSON.isuLists);
             setStockList(responseJSON.isuLists)
         });
     },[]) 
@@ -26,10 +26,11 @@ function TodoForm(props) {
     const handleSubmit = e => {
         e.preventDefault();
 	// 여기가 다솜누나 stockList 받을 곳
+	console.log(input.split(' '));
         props.onSubmit({
             id: Math.floor(Math.random() * 100000),
-            name: input,
-	    issue_code: input,
+            name: input.split(' ')[1],
+	    issue_code: input.split(' ')[0],
 	    price: '000000',
         });
         

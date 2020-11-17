@@ -22,6 +22,7 @@ function Todo({todos, completeTodo, removeTodo, handleClick}) {
             <div key={todo.issue_code}
                         onClick={() => completeTodo(todo.issue_code)}>
                 <div>종목코드 : {todo.issue_code}</div>
+	    {/*<div>종목명   : {todo.name}</div>*/}
                 <div>
                     현재가 ₩  :  {numberWithCommas(todo.price)}
                 </div>
