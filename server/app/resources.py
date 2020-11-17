@@ -64,12 +64,26 @@ class GetStocks(Resource):
     def post(self):
         data = parser.parse_args()
         account = Account.query.filter(Account.username==data['username'])
-        if not hasattr(account.first(), 'stocks'):
-            print("Empty")
-            return [];
-        else:
+        if account.first() != None:
             print(account.first().stocks)
-            return account.first().stocks
+            temp_stocks = account.first().stocks
+
+            ret = []
+            for issue_code in temp_stocks:
+                url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/price'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus(issue_code))
+                dev_key = 'l7xxa94785c403c148c1a1ababb7564992bb'
+                queryParams = '?' + urlencode({ quote_plus('apikey') : dev_key}) 
+                request = Request(url + queryParams)
+                request.get_method = lambda: 'GET'
+                response_body = urlopen(request).read()
+                dic = eval(response_body)
+                ret.append({
+                   "price":dic['result']['trdPrc'],
+                   "issue_code":dic['result']['isuSrtCd'],
+                })
+            return ret
+
+
 
 class GetSummary(Resource):
     def post(self):
