@@ -33,7 +33,7 @@ export default class Login extends Component{
 
   handleRegistration = e =>{
     e.preventDefault();
-    let url = "http://13.125.73.136:5000/register"
+    let url = "http://3.35.233.198:5000/register"
     //let url = "http://52.79.239.91:5000/register"
     let formData  = new FormData();
     let data = this.state;
@@ -61,7 +61,7 @@ export default class Login extends Component{
   handleSignIn = e =>{
     e.preventDefault() ;
     //let url = "http://52.79.239.91:5000/login"
-    let url = "http://13.125.73.136:5000/login"
+    let url = "http://3.35.233.198:5000/login"
     let formData  = new FormData();
     let data = this.state;
     for(let name in data) {

@@ -83,8 +83,6 @@ class GetStocks(Resource):
                 })
             return ret
 
-
-
 class GetSummary(Resource):
     def post(self):
         data = parser.parse_args()
@@ -94,6 +92,7 @@ class GetSummary(Resource):
             temp_stocks = account.first().stocks
 
             ret = []
+            per_avg = 0
             for issue_code in temp_stocks:
                 url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/master'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus(issue_code))
                 dev_key = 'l7xxa94785c403c148c1a1ababb7564992bb'
@@ -103,12 +102,25 @@ class GetSummary(Resource):
                 response_body = urlopen(request).read()
                 # name = json.dumps(response_body)
                 dic = eval(response_body)
+                name=dic['result']['isuKorAbbrv']
+                issue_code=dic['result']['isuSrtCd']
+                eps=dic['result']['eps']
+                per=dic['result']['per']
+                per_avg += per 
+                url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/price'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus('005930')) 
+                request = Request(url + queryParams) 
+                request.get_method = lambda: 'GET' 
+                response_body = urlopen(request).read() 
+                print response_body
+                dic = eval(response_body)
+                price = dic['result']['trdPrc']
                 ret.append({
-                   "name":dic['result']['isuKorAbbrv'],
-                   "issue_code":dic['result']['isuSrtCd'],
-                    "eps":dic['result']['eps'],
-                    "per":dic['result']['per'],
-                })
+                            "name":name,
+                            "issue_code":issue_code,
+                            "price":price,
+                            "eps":eps,
+                            "per":per,
+                            })
             return ret
 
 class AddStock(Resource):
