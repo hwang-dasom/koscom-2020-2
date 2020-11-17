@@ -18,6 +18,10 @@ def index():
 
 api.add_resource(resources.UserRegistration, '/register')
 api.add_resource(resources.UserLogin, '/login')
+api.add_resource(resources.GetStocks, '/get_stocks')
+api.add_resource(resources.GetSummary, '/get_summary')
+api.add_resource(resources.AddStock, '/add_stock')
+api.add_resource(resources.RemoveStock, '/remove_stock')
 
 if __name__ == "__main__":
     app.debug = True
