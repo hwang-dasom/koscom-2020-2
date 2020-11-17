@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Fragment, } from 'react';
+import React, { useState, Fragment, } from 'react';
 
 function TodoForm(props) {
     const [input, setInput] = useState([]);
@@ -9,11 +9,12 @@ function TodoForm(props) {
 
     const handleSubmit = e => {
         e.preventDefault();
-
+	// 여기가 다솜누나 stockList 받을 곳
         props.onSubmit({
-            stockCode: Math.floor(Math.random() * 10000),
-            stockName: input,
-            stockValue: Math.floor(Math.random() * 100000),
+            id: Math.floor(Math.random() * 100000),
+            name: input,
+	    issue_code: input,
+	    price: '000000',
         });
         
         setInput('');

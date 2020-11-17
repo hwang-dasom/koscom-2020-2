@@ -1,105 +1,179 @@
-import React, { Fragment, useState, } from 'react'
-import TodoForm from './TodoForm'
-import Todo from './Todo'
-import { Link } from 'react-router-dom';
-//import { CardGroup } from 'react-bootstrap';
+import React, { Fragment, useState, useEffect, } from 'react';
+import TodoForm from './TodoForm';
+import Todo from './Todo';
+import axios from 'axios';
+import Stocks from './Stocks';
 
 import UserStockContext from './UserStockContext'
 import userSelectedStockList from './userSelectedStockList'
 
 
-function TodoList() {
+
+function TodoList(props) {
     const [todos, setTodos] = useState([]);
+    const [summarys, setSummarys] = useState([]);
+    const [evalPage, setEvalPage] = useState();
+    
+    useEffect(() => {
+        axios({
+	    method: 'post',
+	    url: 'http://13.125.73.136:5000/get_stocks',
+	    data: {
+	        "username":localStorage.getItem("username")
+	    }
+	})
+        .then(res => {
+	    if(res.data.length != 0) {
+		console.log('res.data : ', res.data);
+                setTodos(res.data);
+            }
+        })
+        .catch(error => alert(error))
+    }, [todos.length]);
+
+    useEffect(() => {
+        todos.map(todo => {
+            if(!UserStockContext.includes(todo.issue_code)) {
+                UserStockContext.push(todo.issue_code);
+            }
+        })
+        console.log('UserStockContext : ', UserStockContext);
+    }, [todos]);
+
+    useEffect(() => {
+        const newPage = summarys.map(stock => {
+            if(userSelectedStockList.includes(stock.issue_code)) {
+                return (
+                    <Fragment>
+                        <Stocks 
+                            name={stock.name} 
+                            issue_code={stock.issue_code}
+			    price={stock.price}
+		            eps={stock.eps}
+			    per={stock.per}
+                        />
+                     </Fragment>
+                );
+             }
+         })
+         setEvalPage( newPage );
+    }, [summarys])
 
     const addTodo = todo => {
-        if(!todo.stockName || /^\s*$/.test(todo.text)) {
+        if(!todo.name || /^\s*$/.test(todo.text)) {
             return;
         }
 
+        const returnVal = axios({
+	    method: 'post',
+	    url: 'http://13.125.73.136:5000/add_stock',
+	    data: {
+	        "username": localStorage.getItem("username"),
+		"stock": todo.issue_code,
+	    }
+	})
+	console.log(returnVal);
         const newTodos = [todo, ...todos]
-        UserStockContext.push(todo.stockCode);
-
-        setTodos(newTodos)
-        // console.log(todo, ...todos); => 이전의 todo (...todo) 
+        setTodos(newTodos);
     }
 
-    const updateTodo = (todoId, newValue) => {
-        if(!newValue.text || /^\s*$/.test(newValue.text)) {
-            return;
-        }
-
-        setTodos(prev => 
-            prev.map(item => 
-                (item.stockCode === todoId ? newValue : item)))
-    }
 
     const removeTodo = id => {
-        const removeArr = [...todos].filter(todo => todo.stockCode !== id) 
+        const removeArr = [...todos].filter(todo => todo.issue_code !== id) 
 
         const iindex = (element) => element === id
         UserStockContext.splice(UserStockContext.findIndex(iindex), 1);
         userSelectedStockList.splice(userSelectedStockList.findIndex(iindex), 1);
 
-        console.log('removeTodo total Stock List : ', UserStockContext);
-        console.log('removeTodo total selected Stock List : ', userSelectedStockList);
+	handleClick();
+
+        const returnVal = axios({
+	    method: 'post',
+	    url: 'http://13.125.73.136:5000/remove_stock',
+	    data: {
+	        "username": localStorage.getItem("username"),
+		"stock": id
+	    }
+	})
+	console.log('remove_stock : ', returnVal);
 
         setTodos(removeArr)
     }
 
     const completeTodo = id => {
         let updateTodos = todos.map(todo => {
-            if (todo.stockCode === id) {
+            if (todo.issue_code === id) {
                 todo.isComplete = !todo.isComplete
                 if(todo.isComplete) {
-                    if(!UserStockContext.includes(todo.stockCode)) {
-                        UserStockContext.push(todo.stockCode);
-                    }
-                    if(!userSelectedStockList.includes(todo.stockCode)) {
-                        userSelectedStockList.push(todo.stockCode);
+                    if(!userSelectedStockList.includes(todo.issue_code)) {
+                        userSelectedStockList.push(todo.issue_code);
+			handleClick();
                     }
                 }
                 else if (!todo.isComplete) {
-                    const iindex = (element) => element === todo.stockCode
+                    const iindex = (element) => element === todo.issue_code
                     userSelectedStockList.splice(userSelectedStockList.findIndex(iindex), 1);
+	            handleClick();
                 }
             }
-
-            console.log('completeTodo total Stock List : ', UserStockContext);
-            console.log('completeTodo total selected Stock List : ', userSelectedStockList);
             
             return todo;
         })
-
+	console.log('completeTodo : ', localStorage.getItem("username"));
         setTodos(updateTodos);
+    }
+
+    const handleClick = e => {
+
+	    console.log('handleClick event : ', e);
+        
+        const returnVal = axios({
+	    method: 'post',
+	    url: 'http://13.125.73.136:5000/get_summary',
+	    data: {
+	        "username": localStorage.getItem("username")
+	    }
+	})
+	.then(
+            res => {
+                console.log('get summary :', res.data);
+		setSummarys(res.data);
+            }
+	)
+    }
+    const clearTodo = todo => {
+        userSelectedStockList.splice(0, userSelectedStockList.length);
+        UserStockContext.splice(0, UserStockContext.length);
     }
 
     return (
         <Fragment>
             <div>
                 <TodoForm onSubmit={addTodo}/>
-	    {/*<CardGroup>*/}
+                <div>
                     <Todo 
                         todos={todos}
                         completeTodo={completeTodo}
                         removeTodo={removeTodo}
-                        updateTodo={updateTodo}
+	                onClick={handleClick}
                     />
-	    {/* </CardGroup> */}
+                </div>
             </div>
             <div>
-                {userSelectedStockList.length > 1 ? (
-                    <div>
-                        <button className='calc-button' >
-                            비교하기
-                        </button>
+                {userSelectedStockList.length > 0 ? (
+                    <div className='calc-button'>
+                        How Much?
                     </div>
                 )
                 :
-                <div>
-
-                </div>
-                }                
+		(
+	           <div></div>
+		)
+                }
             </div>
+            {
+                evalPage
+            }
         </Fragment>
     )
 }

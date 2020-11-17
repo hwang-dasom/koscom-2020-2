@@ -126,9 +126,10 @@ class RemoveStock(Resource):
     def post(self):
         data = parser.parse_args()
         account = Account.query.filter(Account.username==data['username'])
-        if account.first() == None:
+        if not hasattr(account.first(), 'stocks'):
             print("empty")
         else:
+            temp_stocks=account.first().stocks
             if data['stock'] in temp_stocks: temp_stocks.remove(data['stock'])
             with Session.connect('mongoalchemy') as s:
                 update = account.set(Account.stocks, temp_stocks)
