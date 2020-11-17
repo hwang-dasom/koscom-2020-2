@@ -8,6 +8,7 @@ from model import User, db, Account
 from urllib2 import Request, urlopen 
 from urllib import urlencode, quote_plus
 from mongoalchemy.session import Session
+import json
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help = 'Username cannot be blank', required = False)
@@ -72,15 +73,23 @@ class GetSummary(Resource):
         print(account.first().stocks)
         temp_stocks = account.first().stocks
 
-        #005930 samsung
+        ret = []
         for issue_code in temp_stocks:
             url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/master'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus(issue_code))
             dev_key = 'l7xxa94785c403c148c1a1ababb7564992bb'
             queryParams = '?' + urlencode({ quote_plus('apikey') : dev_key}) 
-            request = Request(url + queryParams) 
-            request.get_method = lambda: 'GET' 
+            request = Request(url + queryParams)
+            request.get_method = lambda: 'GET'
             response_body = urlopen(request).read()
-        print(response_body)
+            # name = json.dumps(response_body)
+            dic = eval(response_body)
+            ret.append({
+                "name":dic['result']['isuKorAbbrv'],
+                "issue_code":dic['result']['isuSrtCd'],
+                "eps":dic['result']['eps'],
+                "per":dic['result']['per'],
+            })
+        return ret
 
 class AddStock(Resource):
     def post(self):
