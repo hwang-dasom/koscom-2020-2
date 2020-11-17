@@ -107,7 +107,7 @@ class GetSummary(Resource):
                 eps=dic['result']['eps']
                 per=dic['result']['per']
                 per_avg += per 
-                url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/price'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus('005930')) 
+                url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/price'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus(issue_code)) 
                 request = Request(url + queryParams) 
                 request.get_method = lambda: 'GET' 
                 response_body = urlopen(request).read() 

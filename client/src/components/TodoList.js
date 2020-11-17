@@ -8,6 +8,9 @@ import UserStockContext from './UserStockContext'
 import userSelectedStockList from './userSelectedStockList'
 
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 function TodoList(props) {
     const [todos, setTodos] = useState([]);
@@ -17,7 +20,7 @@ function TodoList(props) {
     useEffect(() => {
         axios({
 	    method: 'post',
-	    url: 'http://13.125.73.136:5000/get_stocks',
+	    url: 'http://3.35.233.198:5000/get_stocks',
 	    data: {
 	        "username":localStorage.getItem("username")
 	    }
@@ -41,16 +44,29 @@ function TodoList(props) {
     }, [todos]);
 
     useEffect(() => {
+	var perSum = 0, perAvg = 0;
+	
+	for(var i=0; i< summarys.length; i++) {
+	    if(userSelectedStockList.includes(summarys[i].issue_code)) {
+                perSum += summarys[i].per; 
+            }
+        }
+	perAvg = perSum/userSelectedStockList.length;
+	console.log('perAvg : ', perAvg);
+
         const newPage = summarys.map(stock => {
             if(userSelectedStockList.includes(stock.issue_code)) {
+		var optimalPrice = stock.eps * perAvg;
                 return (
                     <Fragment>
                         <Stocks 
                             name={stock.name} 
                             issue_code={stock.issue_code}
-			    price={stock.price}
+			    price={numberWithCommas(stock.price)}
 		            eps={stock.eps}
 			    per={stock.per}
+			    optimal={numberWithCommas(optimalPrice.toFixed(2))}
+			    diff={stock.price-optimalPrice}
                         />
                      </Fragment>
                 );
@@ -66,12 +82,13 @@ function TodoList(props) {
 
         const returnVal = axios({
 	    method: 'post',
-	    url: 'http://13.125.73.136:5000/add_stock',
+	    url: 'http://3.35.233.198:5000/add_stock',
 	    data: {
 	        "username": localStorage.getItem("username"),
 		"stock": todo.issue_code,
 	    }
 	})
+
 	console.log(returnVal);
         const newTodos = [todo, ...todos]
         setTodos(newTodos);
@@ -89,7 +106,7 @@ function TodoList(props) {
 
         const returnVal = axios({
 	    method: 'post',
-	    url: 'http://13.125.73.136:5000/remove_stock',
+	    url: 'http://3.35.233.198:5000/remove_stock',
 	    data: {
 	        "username": localStorage.getItem("username"),
 		"stock": id
@@ -129,7 +146,7 @@ function TodoList(props) {
         
         const returnVal = axios({
 	    method: 'post',
-	    url: 'http://13.125.73.136:5000/get_summary',
+	    url: 'http://3.35.233.198:5000/get_summary',
 	    data: {
 	        "username": localStorage.getItem("username")
 	    }
@@ -161,9 +178,20 @@ function TodoList(props) {
             </div>
             <div>
                 {userSelectedStockList.length > 0 ? (
+		    <Fragment>
                     <div className='calc-button'>
                         How Much?
                     </div>
+                        <Stocks 
+                            name="종목명"
+                            issue_code="종목번호"
+			    price="현재주가"
+		            eps="EPS"
+			    per="PER"
+			    optimal="산출(적정)주가"
+			    diff="차이"
+			/>
+	             </Fragment>
                 )
                 :
 		(

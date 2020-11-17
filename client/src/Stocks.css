@@ -17,8 +17,7 @@
   .stock {
     display: flex;
     align-items: center;
-    padding-right: 24px;  
-    min-width: 300px;
+    min-width: 50px;
   }
   
   .stock h1 {
@@ -48,7 +47,7 @@
   }
   
   .stock-volume {
-    width: 170px;
+    width: 20%;
   }
   
   .stock-marketcap {

@@ -1,7 +1,7 @@
 import React from "react";
 import {Navbar,Nav,NavItem, Button} from "react-bootstrap";
 import {Link} from 'react-router-dom';
-import logo from './koscom.png'
+import logo from './koshowmuch.png'
 import {isLoggedIn, deleteTokens} from './auth.js';
 
 import './nav.css';
