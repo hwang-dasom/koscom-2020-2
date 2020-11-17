@@ -1,11 +1,27 @@
-import React, { useState, Fragment, } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
+import SelectedItem from './Item';
+
+const dev_key = 'l7xxa94785c403c148c1a1ababb7564992bb'
 
 function TodoForm(props) {
     const [input, setInput] = useState([]);
-
+	const [stockList, setStockList] = useState([]);
     const handleChange = e => {
         setInput(e.target.value);
     }
+
+    useEffect(() => {
+        fetch(`https://sandbox-apigw.koscom.co.kr/v2/market/stocks/kospi/lists?apikey=${dev_key}`)
+        .then(response => {
+            return response.json()
+        })
+        .then(responseJSON => {
+            console.log('response:', responseJSON.isuLists);
+            setStockList(responseJSON.isuLists)
+        });
+    },[]) 
+
+
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -20,6 +36,10 @@ function TodoForm(props) {
         setInput('');
     };
 
+    const filteredList = stockList.filter(stockList => 
+        stockList.isuKorNm.includes(input)  
+    )
+
     return (
         <div>  
             <form className='todo-form' onSubmit={handleSubmit}>
@@ -32,7 +52,18 @@ function TodoForm(props) {
                         name='text'
                         className='todo-input'
                         onChange={handleChange}
+                        list='stocks'
                     />
+                    <datalist id='stocks'>
+                    {
+                        filteredList.map(stock => {
+                        return (
+                        <option value={'' + stock.isuSrtCd +' '+ stock.isuKorNm} />
+                    )   
+                    }
+                    )
+                    }
+                    </datalist>
                     <button className='todo-button'>
                         추가
                     </button>
