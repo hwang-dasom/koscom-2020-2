@@ -64,39 +64,46 @@ class GetStocks(Resource):
     def post(self):
         data = parser.parse_args()
         account = Account.query.filter(Account.username==data['username'])
-        print(account.first().stocks)
+        if not hasattr(account.first(), 'stocks'):
+            print("Empty")
+            return [];
+        else:
+            print(account.first().stocks)
+            return account.first().stocks
 
 class GetSummary(Resource):
     def post(self):
         data = parser.parse_args()
         account = Account.query.filter(Account.username==data['username'])
-        print(account.first().stocks)
-        temp_stocks = account.first().stocks
+        if account.first() != None:
+            print(account.first().stocks)
+            temp_stocks = account.first().stocks
 
-        ret = []
-        for issue_code in temp_stocks:
-            url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/master'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus(issue_code))
-            dev_key = 'l7xxa94785c403c148c1a1ababb7564992bb'
-            queryParams = '?' + urlencode({ quote_plus('apikey') : dev_key}) 
-            request = Request(url + queryParams)
-            request.get_method = lambda: 'GET'
-            response_body = urlopen(request).read()
-            # name = json.dumps(response_body)
-            dic = eval(response_body)
-            ret.append({
-                "name":dic['result']['isuKorAbbrv'],
-                "issue_code":dic['result']['isuSrtCd'],
-                "eps":dic['result']['eps'],
-                "per":dic['result']['per'],
-            })
-        return ret
+            ret = []
+            for issue_code in temp_stocks:
+                url = 'https://sandbox-apigw.koscom.co.kr/v2/market/stocks/{marketcode}/{issuecode}/master'.replace('{marketcode}',quote_plus('kospi')).replace('{issuecode}',quote_plus(issue_code))
+                dev_key = 'l7xxa94785c403c148c1a1ababb7564992bb'
+                queryParams = '?' + urlencode({ quote_plus('apikey') : dev_key}) 
+                request = Request(url + queryParams)
+                request.get_method = lambda: 'GET'
+                response_body = urlopen(request).read()
+                # name = json.dumps(response_body)
+                dic = eval(response_body)
+                ret.append({
+                   "name":dic['result']['isuKorAbbrv'],
+                   "issue_code":dic['result']['isuSrtCd'],
+                    "eps":dic['result']['eps'],
+                    "per":dic['result']['per'],
+                })
+            return ret
 
 class AddStock(Resource):
     def post(self):
         data = parser.parse_args()
         account = Account.query.filter(Account.username==data['username'])
         temp_stocks=[data['stock']]
-        temp_stocks.extend(account.first().stocks)
+        if hasattr(account.first(), 'stocks'):
+            temp_stocks.extend(account.first().stocks)
         with Session.connect('mongoalchemy') as s:
             update = account.set(Account.stocks, temp_stocks)
             update.execute() 
@@ -105,8 +112,10 @@ class RemoveStock(Resource):
     def post(self):
         data = parser.parse_args()
         account = Account.query.filter(Account.username==data['username'])
-        temp_stocks=account.first().stocks
-        if data['stock'] in temp_stocks: temp_stocks.remove(data['stock'])
-        with Session.connect('mongoalchemy') as s:
-            update = account.set(Account.stocks, temp_stocks)
-            update.execute()
+        if account.first() == None:
+            print("empty")
+        else:
+            if data['stock'] in temp_stocks: temp_stocks.remove(data['stock'])
+            with Session.connect('mongoalchemy') as s:
+                update = account.set(Account.stocks, temp_stocks)
+                update.execute()
