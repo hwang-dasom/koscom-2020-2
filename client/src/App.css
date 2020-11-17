@@ -37,3 +37,182 @@
     max-width: 450px;
   }
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Lato', sans-serif;
+}
+
+.reports,
+.products {
+  display: flex;
+  height: 90vh;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  /* min-height: 600px; */
+  background: #161a2b;
+  margin: 1% 1% 1% 1%;
+  text-align: center;
+  /* margin: 128px auto; */
+  /* margin: auto; */
+  border-radius: 10px;
+  padding-bottom: 32px;
+}
+
+.complete {
+  /* text-decoration: line-through; */
+  opacity: 0.4;
+}
+
+.todo-form {
+  margin-top: 1%;
+  margin-bottom: 32px;
+}
+
+.todo-input {
+  padding: 14px 32px 14px 16px;
+  border-radius: 4px 0 0 4px;
+  border: 2px solid #5d0cff;
+  outline: none;
+  width: 320px;
+  background: transparent;
+  color: #fff;
+}
+
+.todo-input::placeholder {
+  color: #e2e2e2;
+}
+
+.todo-button {
+  padding: 16px;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  outline: none;
+  background: linear-gradient(
+    90deg,
+    rgba(93, 12, 255, 1) 0%,
+    rgba(155, 0, 250, 1) 100%
+  );
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.todo-input.edit {
+  border: 2px solid #149fff;
+}
+
+.card-group {
+  position: relative;
+  align-items: center;
+  /* min-width: 50%; */
+  padding: 2%;
+}
+
+.todo-button.edit {
+  background: linear-gradient(
+    90deg,
+    rgba(20, 159, 255, 1) 0%,
+    rgba(17, 122, 255, 1) 100%
+  );
+  padding: 16px 22px;
+}
+
+.todo-container {
+  float: top;
+  display: flex;
+  /* flex-direction: row; */
+  position: relative;
+}
+
+.todo-row {
+  position: relative;
+  /* display: flex; */
+  float: left;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1%;
+  color: #fff;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 20, 1) 0%,
+    rgba(255, 84, 17, 1) 100%
+  );
+
+  padding: 16px;
+  border-radius: 5px;
+  min-width: 30%;
+}
+
+.todo-row:nth-child(4n + 1) {
+  background: linear-gradient(
+    90deg,
+    rgba(93, 12, 255, 1) 0%,
+    rgba(155, 0, 250, 1) 100%
+  );
+}
+
+.todo-row:nth-child(4n + 2) {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 12, 241, 1) 0%,
+    rgba(250, 0, 135, 1) 100%
+  );
+}
+
+.todo-row:nth-child(4n + 3) {
+  background: linear-gradient(
+    90deg,
+    rgba(20, 159, 255, 1) 0%,
+    rgba(17, 122, 255, 1) 100%
+  );
+}
+
+.icons {
+  display: flex;
+  /* align-items: right; */
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.delete-icon {
+  cursor: pointer;
+  margin-right: 1%;
+  font-size: 150%;
+  float: right;
+  color: #fff;
+}
+
+.edit-icon {
+  cursor: pointer;
+  float: left;
+  margin-left: 1%;
+  font-size: 150%;
+  color: #fff;
+}
+
+.calc-button {
+  padding: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  background: linear-gradient(
+    90deg,
+    rgba(93, 12, 255, 1) 0%,
+    rgba(155, 0, 250, 1) 100%
+  );
+  color: #fff;
+  text-transform: capitalize;
+}
