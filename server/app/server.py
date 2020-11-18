@@ -5,9 +5,14 @@ from flask_jwt_extended import JWTManager
 
 from model import User,db
 import resources
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
+
+#app = Flask(__name__)
+#api = Api(app)
 
 app.config['JWT_SECRET_KEY'] = 'boost-is-the-secret-of-our-app'
 jwt=JWTManager(app)
